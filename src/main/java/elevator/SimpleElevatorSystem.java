@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class SimpleElevatorSystem implements ElevatorSystem{
     private final int floorsAmount;
-    private ArrayList<Elevator> elevators;
+    private ArrayList<Elevator> elevators = new ArrayList<>();
 
 //    //1 if button on floor is pressed 0 when it's not
 //    private Boolean[] upRequest;
