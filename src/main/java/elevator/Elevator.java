@@ -7,6 +7,10 @@ public class Elevator {
     private final int capacity;
     private int currCapacity;
     private int currFloor;
+    //true is up request, and false is down request
+    private boolean direction;
+    //true when doors are open, and false when closed
+    private boolean isOpen;
     public ArrayList<Integer> destFloor = new ArrayList<>();
 
     public Elevator(int id, int capacity, int currFloor) {
@@ -20,6 +24,9 @@ public class Elevator {
 
         this.currCapacity = 0;
         this.currFloor = currFloor;
+
+        this.direction = true;
+        this.isOpen = false;
     }
 
     public int getId() {
@@ -48,5 +55,21 @@ public class Elevator {
 
     public int getCurrFloor() {
         return currFloor;
+    }
+
+    public boolean getDirection() {
+        return direction;
+    }
+
+    public void setDirection(boolean direction) {
+        this.direction = direction;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
     }
 }

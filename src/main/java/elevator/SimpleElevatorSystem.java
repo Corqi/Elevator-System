@@ -3,14 +3,14 @@ package elevator;
 import java.util.ArrayList;
 
 public class SimpleElevatorSystem implements ElevatorSystem{
-    private final int floorsAmount;
+    public final int floorsAmount;
     private ArrayList<Elevator> elevators = new ArrayList<>();
 
 //    //1 if button on floor is pressed 0 when it's not
 //    private Boolean[] upRequest;
 //    private Boolean[] downRequest;
 
-    private ArrayList<Integer> request = new ArrayList<>();
+    private ArrayList<Request> request = new ArrayList<>();
 
     public SimpleElevatorSystem(int elevatorAmount, int capacity, int floorsAmount) {
         this.floorsAmount = floorsAmount;
@@ -38,8 +38,8 @@ public class SimpleElevatorSystem implements ElevatorSystem{
 //        else{
 //            this.downRequest[floor] = true;
 //        }
-        if(!this.request.contains(floor)){
-            this.request.add(floor);
+        if(!this.request.contains(new Request(floor, direction))){
+            this.request.add(new Request(floor, direction));
         }
     }
 
@@ -56,15 +56,20 @@ public class SimpleElevatorSystem implements ElevatorSystem{
 
     public void step() {
         for (Elevator elevator : elevators) {
+            //Close door
+            elevator.setOpen(false);
             //Check if elevator can take a new request
             if (elevator.destFloor.isEmpty()) {
                 if (!this.request.isEmpty()) {
-                    elevator.destFloor.add(this.request.get(0));
+                    elevator.destFloor.add(this.request.get(0).floor);
+                    elevator.setDirection(this.request.get(0).direction);
                     request.remove(0);
                 }
             }
             //Check if elevator should stop at destination floor
             else if(elevator.destFloor.contains(elevator.getCurrFloor())){
+                //Open door
+                elevator.setOpen(true);
                 //Let out all passengers at their destination
                 elevator.destFloor.removeIf(i -> i == elevator.getCurrFloor());
 
