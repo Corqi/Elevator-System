@@ -46,7 +46,7 @@ public class SimpleElevatorSystem implements ElevatorSystem{
     //Choose floor inside the elevator. It also acts as person going inside an elevator.
     public void chooseFloor(int id, int destination){
         elevators.get(id).destFloor.add(destination);
-        elevators.get(id).setCurrFloor(elevators.get(id).getCurrFloor() + 1);
+        elevators.get(id).setCurrCapacity(elevators.get(id).getCurrCapacity() + 1);
     }
 
     public void update(int id, int currFloor, ArrayList<Integer> destFloor) {
