@@ -1,7 +1,5 @@
 package elevator;
 
-import java.io.IOException;
-import java.lang.management.BufferPoolMXBean;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -23,12 +21,12 @@ public class Simulation {
     private final int simulationSteps;
 
     //Number of people at each floor, for each direction
-    private int[] upRequests;
-    private int[] downRequests;
+    private final int[] upRequests;
+    private final int[] downRequests;
     //True if button on i'th floor is pressed, for each direction
-    private boolean[] upPressed;
-    private boolean[] downPressed;
-    private SimpleElevatorSystem system;
+    private final boolean[] upPressed;
+    private final boolean[] downPressed;
+    private final SimpleElevatorSystem system;
 
     public Simulation(int simulationSteps, int frequency, int frequencyAmount, int elevatorAmount, int capacity,
                       int floorsAmount, Boolean useDraw, int pauseTime) {
