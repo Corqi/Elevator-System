@@ -2,9 +2,11 @@ package elevator;
 import java.util.ArrayList;
 
 public interface ElevatorSystem {
-    void pickup(int floor, int direction);
+    void pickup(int floor, boolean direction);
 
-    void update(int id, int currFloor, int destFloor);
+    void chooseFloor(int id, int destination);
+
+    void update(int id, int currFloor, ArrayList<Integer> destFloor);
 
     void step();
 
