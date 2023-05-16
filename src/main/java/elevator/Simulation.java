@@ -9,7 +9,7 @@ public class Simulation {
     public static final String ANSI_GREEN = "\u001B[32m";
 
     //True will make each step being visually drawn in console, False will output text based information
-    private final Boolean useDraw;
+    private final boolean useDraw;
     //Time in between each step (in milliseconds)
     private final int pauseTime;
     //Frequency is number of steps in between every user batch generation
@@ -83,7 +83,7 @@ public class Simulation {
 
                     //Generate user direction
                     int randInt = random.nextInt(2);
-                    boolean direction = randInt == 0 ? true : false;
+                    boolean direction = randInt == 0;
                     //Special cases for edge floors
                     if (userFloor == this.system.floorsAmount - 1){
                         direction = false;
