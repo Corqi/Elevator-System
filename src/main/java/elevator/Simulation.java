@@ -21,6 +21,10 @@ public class Simulation {
     private final int simulationSteps;
     //Simulation seed
     private final long seed;
+    //Number of users generated during simulation
+    private int users;
+    //Combined waiting time of all users
+    private int waitTime;
 
     //Number of people at each floor, for each direction
     private final int[] upRequests;
@@ -45,6 +49,9 @@ public class Simulation {
             throw new IllegalArgumentException("Frequency needs to be greater than 0.");
         }
         this.seed = seed;
+        this.users = 0;
+        this.waitTime = 0;
+
         this.frequency = frequency;
         if (frequencyAmount < 1){
             throw new IllegalArgumentException("FrequencyAmount needs to be greater than 0.");
@@ -67,6 +74,9 @@ public class Simulation {
             //Start by generating users every frequency number of steps
             if (i % this.frequency == 0){
                 int frequencyAmount = random.nextInt(this.frequencyAmount) + 1;
+                //Adding generated users to combined number
+                this.users += frequencyAmount;
+
                 for (int j=0; j < frequencyAmount; j++){
                     //Generate user's current floor
                     int userFloor = random.nextInt(this.system.floorsAmount);
@@ -100,9 +110,15 @@ public class Simulation {
                     system.pickup(j, false);
                     this.downPressed[j] = true;
                 }
+
+                //Add users (ones not in elevators) waitTime to combined amount
+                this.waitTime += this.upRequests[j] + this.downRequests[j];
             }
             //Check if users can enter elevator
             for (Elevator elevator: this.system.status()){
+                //Add users (ones in elevators) waitTime to combined amount
+                this.waitTime += elevator.getCurrCapacity();
+
                 //Elevator going up, has open doors and there are users at the current floor
                 if (upRequests[elevator.getCurrFloor()] > 0 && elevator.getDirection() && elevator.isOpen()){
                    //Generate destination for each user that can fit
@@ -186,5 +202,9 @@ public class Simulation {
             System.out.println();
         }
         System.out.println("=".repeat((system.status().size() + 2) * 4 - 3)  + "\n");
+    }
+
+    public float calculateAverageWaitTime(){
+        return (float) this.waitTime / this.users;
     }
 }
