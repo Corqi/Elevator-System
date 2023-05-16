@@ -19,6 +19,8 @@ public class Simulation {
 
     //Steps in simulation
     private final int simulationSteps;
+    //Simulation seed
+    private final long seed;
 
     //Number of people at each floor, for each direction
     private final int[] upRequests;
@@ -28,7 +30,7 @@ public class Simulation {
     private final boolean[] downPressed;
     private final SimpleElevatorSystem system;
 
-    public Simulation(int simulationSteps, int frequency, int frequencyAmount, int elevatorAmount, int capacity,
+    public Simulation(int simulationSteps, long seed, int frequency, int frequencyAmount, int elevatorAmount, int capacity,
                       int floorsAmount, Boolean useDraw, int pauseTime) {
         this.useDraw = useDraw;
         if (pauseTime < 0){
@@ -42,6 +44,7 @@ public class Simulation {
         if (frequency < 1){
             throw new IllegalArgumentException("Frequency needs to be greater than 0.");
         }
+        this.seed = seed;
         this.frequency = frequency;
         if (frequencyAmount < 1){
             throw new IllegalArgumentException("FrequencyAmount needs to be greater than 0.");
@@ -58,7 +61,7 @@ public class Simulation {
     }
 
     public void run(){
-        Random random = new Random();
+        Random random = new Random(this.seed);
 
         for (int i = 0; i < this.simulationSteps; i++){
             //Start by generating users every frequency number of steps
@@ -156,6 +159,7 @@ public class Simulation {
             System.out.println("Elevator no: " + elevator.getId() + " Floor: " + elevator.getCurrFloor() + " Capacity: "
                     + elevator.getCurrCapacity() + " Destinations: " + elevator.destFloor);
         }
+        System.out.println();
     }
 
     public void drawStatus(SimpleElevatorSystem system){
