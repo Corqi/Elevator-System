@@ -7,11 +7,10 @@ public class Elevator {
     private final int capacity;
     private int currCapacity;
     private int currFloor;
-    //true is up request, and false is down request
-    private boolean direction;
+    private boolean up;
     //true when doors are open, and false when closed
     private boolean isOpen;
-    public ArrayList<Integer> destFloor = new ArrayList<>();
+    private final ArrayList<Integer> destFloors = new ArrayList<>();
 
     public Elevator(int id, int capacity, int currFloor) {
         this.id = id;
@@ -25,7 +24,7 @@ public class Elevator {
         this.currCapacity = 0;
         this.currFloor = currFloor;
 
-        this.direction = true;
+        this.up = true;
         this.isOpen = false;
     }
 
@@ -49,20 +48,16 @@ public class Elevator {
         this.currCapacity = currCapacity;
     }
 
-    public void setCurrFloor(int currFloor) {
-        this.currFloor = currFloor;
-    }
-
     public int getCurrFloor() {
         return currFloor;
     }
 
     public boolean getDirection() {
-        return direction;
+        return up;
     }
 
-    public void setDirection(boolean direction) {
-        this.direction = direction;
+    public void setDirection(boolean up) {
+        this.up = up;
     }
 
     public boolean isOpen() {
@@ -71,5 +66,34 @@ public class Elevator {
 
     public void setOpen(boolean open) {
         isOpen = open;
+    }
+
+    public boolean isFree(){
+        return this.destFloors.isEmpty();
+    }
+
+    public ArrayList<Integer> getDestFloors() {
+        return destFloors;
+    }
+
+    public void addDestination(int destination){
+        this.destFloors.add(destination);
+    }
+
+    public boolean hasDestination(int destination){
+        return this.destFloors.contains(destination);
+    }
+
+    public void unloadPassengers(){
+        //Let out all passengers at their destination
+        this.destFloors.removeIf(i -> i == this.currFloor);
+
+        //Subtract it from current capacity
+        this.currCapacity = this.destFloors.size();
+    }
+
+    public void move(){
+        int direction = this.destFloors.get(0) > this.currFloor ? 1 : -1;
+        this.currFloor += direction;
     }
 }

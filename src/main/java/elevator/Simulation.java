@@ -1,6 +1,7 @@
 package elevator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Simulation {
@@ -171,9 +172,12 @@ public class Simulation {
     }
 
     public void printStatus(ArrayList<Elevator> elevators){
+        System.out.println("Uprequests: " + ANSI_GREEN + Arrays.toString(this.upRequests) + ANSI_RESET);
+        System.out.println("Downrequests: " + ANSI_RED + Arrays.toString(this.downRequests) + ANSI_RESET);
         for (Elevator elevator : elevators){
             System.out.println("Elevator no: " + elevator.getId() + " Floor: " + elevator.getCurrFloor() + " Capacity: "
-                    + elevator.getCurrCapacity() + " Destinations: " + elevator.destFloor);
+                    + elevator.getCurrCapacity() + " Destinations: " + elevator.getDestFloors() + " Doors open: "
+                    + elevator.isOpen());
         }
         System.out.println();
     }
@@ -192,7 +196,7 @@ public class Simulation {
                     }
                     System.out.print(elevator.getCurrCapacity() + ANSI_RESET + "\t");
                 }
-                else if (elevator.destFloor.contains(i)){
+                else if (elevator.getDestFloors().contains(i)){
                     System.out.print("X" + "\t");
                 }
                 else {

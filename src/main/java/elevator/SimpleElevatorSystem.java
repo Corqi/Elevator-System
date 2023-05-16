@@ -1,21 +1,18 @@
 package elevator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SimpleElevatorSystem implements ElevatorSystem{
     public final int floorsAmount;
-    private final ArrayList<Elevator> elevators = new ArrayList<>();
-
-//    //1 if button on floor is pressed 0 when it's not
-//    private Boolean[] upRequest;
-//    private Boolean[] downRequest;
-
+    private final ArrayList<Elevator> elevators;
     private final ArrayList<Request> request = new ArrayList<>();
 
     public SimpleElevatorSystem(int elevatorAmount, int capacity, int floorsAmount) {
         this.floorsAmount = floorsAmount;
-//        this.upRequest = new Boolean[floorsAmount];
-//        this.downRequest = new Boolean[floorsAmount];
 
         //Check if amount of elevators does not exceed 16 and is higher than 0
         if (elevatorAmount <= 0 || elevatorAmount > 16) {
@@ -25,65 +22,68 @@ public class SimpleElevatorSystem implements ElevatorSystem{
         if (capacity <= 0) {
             throw new IllegalArgumentException("Capacity must be greater than zero.");
         }
-        for (int i=0; i < elevatorAmount; i++){
-            this.elevators.add(new Elevator(i, capacity, 0));
-        }
+
+        this.elevators = IntStream.range(0, elevatorAmount)
+                .mapToObj(i -> new Elevator(i, capacity, 0))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     //Direction with true value means going up, and false means going down
+    @Override
     public void pickup(int floor, boolean direction) {
-//        if (direction == true){
-//            this.upRequest[floor] = true;
-//        }
-//        else{
-//            this.downRequest[floor] = true;
-//        }
         if(!this.request.contains(new Request(floor, direction))){
             this.request.add(new Request(floor, direction));
         }
     }
 
     //Choose floor inside the elevator. It also acts as person going inside an elevator.
+    @Override
     public void chooseFloor(int id, int destination){
-        elevators.get(id).destFloor.add(destination);
+        elevators.get(id).addDestination(destination);
         elevators.get(id).setCurrCapacity(elevators.get(id).getCurrCapacity() + 1);
     }
 
-    public void update(int id, int currFloor, ArrayList<Integer> destFloor) {
-        elevators.get(id).setCurrFloor(currFloor);
-        elevators.get(id).destFloor = destFloor;
-    }
-
+    @Override
     public void step() {
-        for (Elevator elevator : elevators) {
+        //Check if elevator can take a new request
+        Set<Elevator> freeElevators = this.elevators.stream()
+                .filter(Elevator::isFree)
+                .collect(Collectors.toSet());
+
+        for (Elevator elevator : this.elevators) {
             //Close door
             elevator.setOpen(false);
-            //Check if elevator can take a new request
-            if (elevator.destFloor.isEmpty()) {
-                if (!this.request.isEmpty()) {
-                    elevator.destFloor.add(this.request.get(0).floor);
-                    elevator.setDirection(this.request.get(0).direction);
-                    request.remove(0);
-                }
-            }
+
             //Check if elevator should stop at destination floor
-            else if(elevator.destFloor.contains(elevator.getCurrFloor())){
+            if(elevator.hasDestination(elevator.getCurrFloor())){
                 //Open door
                 elevator.setOpen(true);
-                //Let out all passengers at their destination
-                elevator.destFloor.removeIf(i -> i == elevator.getCurrFloor());
 
-                //Subtract it from current capacity
-                elevator.setCurrCapacity(elevator.destFloor.size());
+                elevator.unloadPassengers();
             }
             //In other cases, move elevator by 1 floor
-            else{
-                int direction = elevator.destFloor.get(0) > elevator.getCurrFloor() ? 1 : -1;
-                elevator.setCurrFloor(elevator.getCurrFloor() + direction);
+            else if(!elevator.isFree()){
+                elevator.move();
             }
+        }
+
+        //Assign request to free elevators
+        int assignAmount = Math.min(freeElevators.size(), this.request.size());
+        for (int i=0; i < assignAmount; i++){
+            int requestFloor = this.request.get(0).floor();
+
+            Elevator nearestElevator = freeElevators.stream()
+                    .min(Comparator.comparing(elevator -> Math.abs(elevator.getCurrFloor() - requestFloor)))
+                    .get();
+            nearestElevator.addDestination(this.request.get(0).floor());
+            nearestElevator.setDirection(this.request.get(0).up());
+
+            freeElevators.remove(nearestElevator);
+            request.remove(0);
         }
     }
 
+    @Override
     public ArrayList<Elevator> status() {
         return elevators;
     }
