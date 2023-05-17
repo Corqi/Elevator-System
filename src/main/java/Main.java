@@ -1,5 +1,5 @@
+import elevator.ManualSimulation;
 import elevator.Simulation;
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -7,16 +7,8 @@ import java.util.Scanner;
 public class Main {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
 
     public static void main(String[] args) {
-//        long seed = System.currentTimeMillis();
-//        long seed = 10;
-//        Simulation sim = new Simulation(30, seed,20, 10, 2,
-//                2, 10, true, 1000);
-//        sim.run();
-//
-//        System.out.println("Average wait time: " + sim.calculateAverageWaitTime() + " steps");
         Scanner scanner = new Scanner(System.in);
         int input;
 
@@ -119,7 +111,7 @@ public class Main {
                     int elevatorAmount;
                     while (true) {
                         try {
-                            System.out.print("Enter elevators amount:  (1-16): ");
+                            System.out.print("Enter elevators amount (1-16): ");
                             elevatorAmount = scanner.nextInt();
                             scanner.nextLine();
 
@@ -213,6 +205,7 @@ public class Main {
                             scanner.nextLine();
                         }
                     }
+                    System.out.print("\n\n");
 
                     Simulation simulation = new Simulation(simulationSteps, seed, frequency, frequencyAmount, elevatorAmount, capacity, floorsAmount, useDraw, pauseTime);
 
@@ -222,7 +215,91 @@ public class Main {
 
                 }
                 else if (input == 2){
-                    //TODO manual simulation
+                    System.out.print("\n\n");
+
+                    //Get simulation parameters from user input
+                    int elevatorAmount;
+                    while (true) {
+                        try {
+                            System.out.print("Enter elevators amount (1-16): ");
+                            elevatorAmount = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (elevatorAmount >= 1 && elevatorAmount <= 16) {
+                                break;
+                            } else {
+                                System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            }
+                        }
+                        catch (InputMismatchException e){
+                            System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            //Clear invalid input
+                            scanner.nextLine();
+                        }
+                    }
+
+                    int capacity;
+                    while (true) {
+                        try {
+                            System.out.print("Enter elevator maximum capacity (minimum 1): ");
+                            capacity = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (capacity >= 1) {
+                                break;
+                            } else {
+                                System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            }
+                        }
+                        catch (InputMismatchException e){
+                            System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            //Clear invalid input
+                            scanner.nextLine();
+                        }
+                    }
+
+                    int floorsAmount;
+                    while (true) {
+                        try {
+                            System.out.print("Enter amount of floors (minimum 2): ");
+                            floorsAmount = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (floorsAmount >= 2) {
+                                break;
+                            } else {
+                                System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            }
+                        }
+                        catch (InputMismatchException e){
+                            System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            //Clear invalid input
+                            scanner.nextLine();
+                        }
+                    }
+
+                    boolean useDraw;
+                    while (true) {
+                        try {
+                            System.out.println("Drawing mode is visually drawn in console, otherwise information is text-based");
+                            System.out.print("Use drawing mode? (true/false): ");
+                            useDraw = scanner.nextBoolean();
+                            scanner.nextLine();
+
+                            break;
+                        }
+                        catch (InputMismatchException e){
+                            System.out.println(ANSI_RED + "Invalid input, please try again.\n" + ANSI_RESET);
+                            //Clear invalid input
+                            scanner.nextLine();
+                        }
+                    }
+                    System.out.print("\n\n");
+
+                    ManualSimulation manualSimulation = new ManualSimulation(elevatorAmount, capacity, floorsAmount, useDraw);
+
+                    manualSimulation.run();
+
                 }
                 else if (input == 3){
                     break;
