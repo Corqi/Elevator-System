@@ -2,6 +2,7 @@ package elevator;
 
 import java.util.ArrayList;
 
+
 public class Elevator {
     private final int id;
     private final int capacity;

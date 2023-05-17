@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+
 public class Simulation {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -88,16 +89,16 @@ public class Simulation {
 
                     //Generate user direction
                     int randInt = random.nextInt(2);
-                    boolean direction = randInt == 0;
+                    boolean up = randInt == 0;
                     //Special cases for edge floors
                     if (userFloor == this.system.floorsAmount - 1){
-                        direction = false;
+                        up = false;
                     }
                     else if(userFloor == 0){
-                        direction = true;
+                        up = true;
                     }
 
-                    if (direction){
+                    if (up){
                         this.upRequests[userFloor] += 1;
                     }
                     else {

@@ -1,5 +1,7 @@
 package elevator;
+
 import java.util.ArrayList;
+
 
 public interface ElevatorSystem {
     void pickup(int floor, boolean direction);

@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+
 public class SimpleElevatorSystem implements ElevatorSystem{
     public final int floorsAmount;
     private final ArrayList<Elevator> elevators;
@@ -54,6 +55,21 @@ public class SimpleElevatorSystem implements ElevatorSystem{
                 .filter(Elevator::isFree)
                 .collect(Collectors.toSet());
 
+        //Assign request to free elevators
+        int assignAmount = Math.min(freeElevators.size(), this.request.size());
+        for (int i=0; i < assignAmount; i++){
+            int requestFloor = this.request.get(0).floor();
+
+            Elevator nearestElevator = freeElevators.stream()
+                    .min(Comparator.comparing(elevator -> Math.abs(elevator.getCurrFloor() - requestFloor)))
+                    .get();
+            nearestElevator.addDestination(this.request.get(0).floor());
+            nearestElevator.setDirection(this.request.get(0).up());
+
+            freeElevators.remove(nearestElevator);
+            request.remove(0);
+        }
+
         for (Elevator elevator : this.elevators) {
             //Close door
             elevator.setOpen(false);
@@ -69,21 +85,6 @@ public class SimpleElevatorSystem implements ElevatorSystem{
             else if(!elevator.isFree()){
                 elevator.move();
             }
-        }
-
-        //Assign request to free elevators
-        int assignAmount = Math.min(freeElevators.size(), this.request.size());
-        for (int i=0; i < assignAmount; i++){
-            int requestFloor = this.request.get(0).floor();
-
-            Elevator nearestElevator = freeElevators.stream()
-                    .min(Comparator.comparing(elevator -> Math.abs(elevator.getCurrFloor() - requestFloor)))
-                    .get();
-            nearestElevator.addDestination(this.request.get(0).floor());
-            nearestElevator.setDirection(this.request.get(0).up());
-
-            freeElevators.remove(nearestElevator);
-            request.remove(0);
         }
     }
 
