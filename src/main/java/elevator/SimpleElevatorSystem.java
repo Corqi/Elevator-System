@@ -12,6 +12,10 @@ public class SimpleElevatorSystem implements ElevatorSystem{
     private final ArrayList<Request> request = new ArrayList<>();
 
     public SimpleElevatorSystem(int elevatorAmount, int capacity, int floorsAmount) {
+        //Check if there are enough floors for elevators to operate
+        if (floorsAmount < 2){
+            throw new IllegalArgumentException("FloorsAmount needs to be greater than 1.");
+        }
         this.floorsAmount = floorsAmount;
 
         //Check if amount of elevators does not exceed 16 and is higher than 0

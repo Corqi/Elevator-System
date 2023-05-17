@@ -46,19 +46,23 @@ public class Simulation {
             throw new IllegalArgumentException("simulationSteps needs to be equal or greater than 0.");
         }
         this.simulationSteps = simulationSteps;
-        if (frequency < 1){
-            throw new IllegalArgumentException("Frequency needs to be greater than 0.");
-        }
+
         this.seed = seed;
         this.users = 0;
         this.waitTime = 0;
 
+        if (frequency < 1){
+            throw new IllegalArgumentException("Frequency needs to be greater than 0.");
+        }
         this.frequency = frequency;
         if (frequencyAmount < 1){
             throw new IllegalArgumentException("FrequencyAmount needs to be greater than 0.");
         }
         this.frequencyAmount = frequencyAmount;
 
+        if (floorsAmount < 2){
+            throw new IllegalArgumentException("FloorsAmount needs to be greater than 1.");
+        }
         this.system = new SimpleElevatorSystem(elevatorAmount, capacity, floorsAmount);
 
         this.upRequests = new int[floorsAmount];
