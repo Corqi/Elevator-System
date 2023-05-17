@@ -1,10 +1,10 @@
 package elevator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class ManualSimulation {
@@ -16,8 +16,8 @@ public class ManualSimulation {
     private final boolean useDraw;
 
     //Destinations of people at each floor, for each direction
-    private final ArrayList<Integer>[] upRequests;
-    private final ArrayList<Integer>[] downRequests;
+    private final ArrayList<ArrayList<Integer>> upRequests;
+    private final ArrayList<ArrayList<Integer>> downRequests;
     //True if button on i'th floor is pressed, for each direction
     private final boolean[] upPressed;
     private final boolean[] downPressed;
@@ -32,12 +32,10 @@ public class ManualSimulation {
         }
         this.system = new SimpleElevatorSystem(elevatorAmount, capacity, floorsAmount);
 
-        this.upRequests = Stream.generate(ArrayList<Integer>::new)
-                .limit(floorsAmount)
-                .toArray(ArrayList[]::new);
-        this.downRequests = Stream.generate(ArrayList<Integer>::new)
-                .limit(floorsAmount)
-                .toArray(ArrayList[]::new);
+        this.upRequests = IntStream.range(0, floorsAmount)
+                .mapToObj(i -> new ArrayList<Integer>()).collect(Collectors.toCollection(ArrayList::new));
+        this.downRequests = IntStream.range(0, floorsAmount)
+                .mapToObj(i -> new ArrayList<Integer>()).collect(Collectors.toCollection(ArrayList::new));
 
         this.upPressed = new boolean[floorsAmount];
         this.downPressed = new boolean[floorsAmount];
@@ -51,11 +49,11 @@ public class ManualSimulation {
             System.out.print("\n\n");
             //Generate pickup requests for each floor
             for (int j = 0; j < system.floorsAmount; j++){
-                if (this.upRequests[j].size() > 0 && !this.upPressed[j]){
+                if (this.upRequests.get(j).size() > 0 && !this.upPressed[j]){
                     system.pickup(j,true);
                     this.upPressed[j] = true;
                 }
-                if (this.downRequests[j].size() > 0 && !this.downPressed[j]){
+                if (this.downRequests.get(j).size() > 0 && !this.downPressed[j]){
                     system.pickup(j, false);
                     this.downPressed[j] = true;
                 }
@@ -63,32 +61,32 @@ public class ManualSimulation {
             //Check if users can enter elevator
             for (Elevator elevator: this.system.status()){
                 //Elevator going up, has open doors and there are users at the current floor
-                if (upRequests[elevator.getCurrFloor()].size() > 0 && elevator.getDirection() && elevator.isOpen()){
+                if (this.upRequests.get(elevator.getCurrFloor()).size() > 0 && elevator.getDirection() && elevator.isOpen()){
                     //Generate destination for each user that can fit
-                    int people = Math.min(upRequests[elevator.getCurrFloor()].size(),
+                    int people = Math.min(this.upRequests.get(elevator.getCurrFloor()).size(),
                             elevator.getCapacity() - elevator.getCurrCapacity());
                     for (int j=0; j < people; j++){
-                        int destFloor = this.upRequests[elevator.getCurrFloor()].get(0);
+                        int destFloor = this.upRequests.get(elevator.getCurrFloor()).get(0);
                         system.chooseFloor(elevator.getId(), destFloor);
 
                         //Subtract waiting line
-                        this.upRequests[elevator.getCurrFloor()].remove(0);
+                        this.upRequests.get(elevator.getCurrFloor()).remove(0);
                     }
 
                     //Release button
                     upPressed[elevator.getCurrFloor()] = false;
                 }
                 //Elevator going down, has open doors and there are users at the current floor
-                else if (downRequests[elevator.getCurrFloor()].size() > 0 && !elevator.getDirection() && elevator.isOpen()){
+                else if (this.downRequests.get(elevator.getCurrFloor()).size() > 0 && !elevator.getDirection() && elevator.isOpen()){
                     //Generate destination for each user that can fit
-                    int people = Math.min(downRequests[elevator.getCurrFloor()].size(),
+                    int people = Math.min(this.downRequests.get(elevator.getCurrFloor()).size(),
                             elevator.getCapacity() - elevator.getCurrCapacity());
                     for (int j=0; j < people; j++){
-                        int destFloor = this.downRequests[elevator.getCurrFloor()].get(0);
+                        int destFloor = this.downRequests.get(elevator.getCurrFloor()).get(0);
                         system.chooseFloor(elevator.getId(), destFloor);
 
                         //Subtract waiting line
-                        this.downRequests[elevator.getCurrFloor()].remove(0);
+                        this.downRequests.get(elevator.getCurrFloor()).remove(0);
                     }
 
                     //Release button
@@ -162,10 +160,10 @@ public class ManualSimulation {
                     boolean up = (destination - initialFloor) > 0;
 
                     if (up){
-                        this.upRequests[initialFloor].add(destination);
+                        this.upRequests.get(initialFloor).add(destination);
                     }
                     else {
-                        this.downRequests[initialFloor].add(destination);
+                        this.downRequests.get(initialFloor).add(destination);
                     }
                 }
                 else if (input == 3){
@@ -185,8 +183,8 @@ public class ManualSimulation {
     }
 
     public void printStatus(ArrayList<Elevator> elevators){
-        System.out.println("Uprequests: " + ANSI_GREEN + Arrays.toString(this.upRequests) + ANSI_RESET);
-        System.out.println("Downrequests: " + ANSI_RED + Arrays.toString(this.downRequests) + ANSI_RESET);
+        System.out.println("Uprequests: " + ANSI_GREEN + this.upRequests + ANSI_RESET);
+        System.out.println("Downrequests: " + ANSI_RED + this.downRequests + ANSI_RESET);
         for (Elevator elevator : elevators){
             System.out.println("Elevator no: " + elevator.getId() + " Floor: " + elevator.getCurrFloor() + " Capacity: "
                     + elevator.getCurrCapacity() + " Destinations: " + elevator.getDestFloors() + " Doors open: "
@@ -197,8 +195,8 @@ public class ManualSimulation {
 
     public void drawStatus(SimpleElevatorSystem system){
         for (int i=system.floorsAmount-1; i >= 0; i--){
-            System.out.print(ANSI_GREEN + this.upRequests[i].size() + "\t");
-            System.out.print(ANSI_RED + this.downRequests[i].size() + ANSI_RESET + "\t");
+            System.out.print(ANSI_GREEN + this.upRequests.get(i).size() + "\t");
+            System.out.print(ANSI_RED + this.downRequests.get(i).size() + ANSI_RESET + "\t");
             for (Elevator elevator: system.status()){
                 if (elevator.getCurrFloor() == i){
                     if (elevator.getDirection()){

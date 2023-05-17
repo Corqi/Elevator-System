@@ -122,7 +122,7 @@ public class Simulation {
             }
             //Check if users can enter elevator
             for (Elevator elevator: this.system.status()){
-                //Add users (ones in elevators) waitTime to combined amount
+                //Add users (those in elevators) waitTime to combined amount
                 this.waitTime += elevator.getCurrCapacity();
 
                 //Elevator going up, has open doors and there are users at the current floor
