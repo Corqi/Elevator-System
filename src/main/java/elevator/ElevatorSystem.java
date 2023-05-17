@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public interface ElevatorSystem {
-    void pickup(int floor, boolean direction);
+    void pickup(int floor, boolean up);
 
     void chooseFloor(int id, int destination);
 

@@ -33,11 +33,10 @@ public class SimpleElevatorSystem implements ElevatorSystem{
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    //Direction with true value means going up, and false means going down
     @Override
-    public void pickup(int floor, boolean direction) {
-        if(!this.request.contains(new Request(floor, direction))){
-            this.request.add(new Request(floor, direction));
+    public void pickup(int floor, boolean up) {
+        if(!this.request.contains(new Request(floor, up))){
+            this.request.add(new Request(floor, up));
         }
     }
 
